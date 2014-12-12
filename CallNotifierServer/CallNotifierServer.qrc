@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Images/MissedCall.png</file>
+        <file>Images/Conversation.png</file>
+        <file>Images/Gear.png</file>
+        <file>Images/Close.png</file>
+        <file>Images/OffhookCall.png</file>
+        <file>Sounds/Call.wav</file>
+        <file>Images/GreenIco.ico</file>
+        <file>Images/RedIco.ico</file>
+    </qresource>
+</RCC>
