@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "BB Notifier Server"
-#define MyAppVersion "1.0"
+#define MyAppVersion "1.0.1"
 #define MyAppPublisher "Green Snake Software"
 #define MyAppURL "http://www.gss.freeiz.com"
 #define MyAppExeName "BBNotifierServer.exe"
@@ -35,7 +35,7 @@ Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 Name: "xpCompatible"; Description: "XP+ Compatible version"; GroupDescription: "Versions"; Flags: exclusive
-Name: "win7Compatible"; Description: "Windows 7+ compatible version"; GroupDescription: "Versions"; Flags: exclusive
+Name: "win7Compatible"; Description: "Windows 7+ compatible version (you'll need MSVC2013 x86 redistributable)"; GroupDescription: "Versions"; Flags: exclusive
 
 [Files]
 Source: "..\build-CallNotifierServer-QT5_3_2_MSVC_Static-Release\release\BBNotifierServer.exe"; DestDir: "{app}"; Flags: ignoreversion; Tasks: win7Compatible

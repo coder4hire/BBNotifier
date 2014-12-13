@@ -18,7 +18,7 @@ class CSettingsDialog : public QDialog
 protected:
     explicit CSettingsDialog(QWidget *parent = 0);
     virtual void showEvent(QShowEvent* ev);
-    virtual void closeEvent(QCloseEvent* ev);
+    virtual void done(int r);
 
     QTimer timer;
     QUdpSocket udpSocket;

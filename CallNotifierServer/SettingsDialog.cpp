@@ -25,6 +25,7 @@
 #include "qlist.h"
 #include "qhostaddress.h"
 #include "qhostinfo.h"
+#include "qnetworkinterface.h"
 
 #include "ServerSocket.h"
 
@@ -70,9 +71,10 @@ void CSettingsDialog::showEvent(QShowEvent *ev)
     timer.start(5000);
 }
 
-void CSettingsDialog::closeEvent(QCloseEvent* ev)
+void CSettingsDialog::done(int r)
 {
     timer.stop();
+    QDialog::done(r);
 }
 
 CSettingsDialog::~CSettingsDialog()
@@ -117,11 +119,15 @@ void CSettingsDialog::OnTimer()
     str.sprintf("BBNotifierWelcome:%05d:",ui->edtPort->value());
     str+=QHostInfo::localHostName();
 
-//    QList<QHostAddress> list = QNetworkInterface::allAddresses();
-//    for(QList<QHostAddress>::Iterator it = list.begin();it!=list.end();it++)
-//    {
-//        udpSocket.writeDatagram(str.toLatin1(),it->,0xBBBB);
-//    }
+    //-F- Sending broadcasts to each interface separately (to avoid WIndows bugs).
+    // And another one to "Total broadcast", just in case :)
+    QList<QNetworkInterface> list = QNetworkInterface::allInterfaces();
+    for(QList<QNetworkInterface>::Iterator it = list.begin();it!=list.end();it++)
+    {
+        QList<QNetworkAddressEntry> addrList = it->addressEntries();
+        for(QList<QNetworkAddressEntry>::Iterator itAddr = addrList.begin();itAddr!=addrList.end();itAddr++)
+        udpSocket.writeDatagram(str.toLatin1(),itAddr->broadcast(),0xBBBB);
+    }
     udpSocket.writeDatagram(str.toLatin1(),QHostAddress(QHostAddress::Broadcast),0xBBBB);
 
     //-F- Show last packet status
