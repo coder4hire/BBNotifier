@@ -33,7 +33,8 @@ SOURCES += main.cpp\
     ListenerSocket.cpp \
     HistoryItemDelegate.cpp \
     NotificationItem.cpp \
-    LinkLabel.cpp
+    LinkLabel.cpp \
+    NotificationItemDelegate.cpp
 
 HEADERS  += mainwnd.h \
     SettingsDialog.h \
@@ -42,7 +43,8 @@ HEADERS  += mainwnd.h \
     ListenerSocket.h \
     HistoryItemDelegate.h \
     NotificationItem.h \
-    LinkLabel.h
+    LinkLabel.h \
+    NotificationItemDelegate.h
 
 FORMS    += mainwnd.ui \
     SettingsDialog.ui

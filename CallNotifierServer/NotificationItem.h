@@ -10,16 +10,18 @@ public:
     {
         EMPTY,
         RINGING_CALL,
-        OFFHOOK_CALL
+        OFFHOOK_CALL,
+        NOTIFICATION
     };
 
 public:
     CNotificationItem();
-    CNotificationItem(const QString& typeStr,const QString& phone,const QString& name,const QDateTime& dateTime);
+    CNotificationItem(const QString& typeStr,const QString& phone,const QString& name,const QDateTime& dateTime,const QString& data);
     CNotificationItem(const QString& serializedString);
 
     QString Phone;
     QString Name;
+    QString Data;
     QDateTime DateTime;
     EType Type;
 

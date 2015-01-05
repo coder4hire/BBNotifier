@@ -23,6 +23,8 @@
 #include "qvariant.h"
 #include "qdatetime.h"
 #include "HistoryItemDelegate.h"
+#include "NotificationItemDelegate.h"
+#include "qlayout.h"
 
 //QIcon CMainWnd::statusIcons[2];
 QIcon CMainWnd::windowIcons[2];
@@ -52,12 +54,16 @@ CMainWnd::CMainWnd(QWidget *parent) :
     ui->listHistory->setItemDelegate(new CHistoryItemDelegate());
     delete delegate;
 
+    //-F- Set Up Item Delegate to the notification list
+    delegate = ui->listNotifications->itemDelegate();
+    ui->listNotifications->setItemDelegate(new CNotificationItemDelegate());
+    delete delegate;
+
     //-F- Loading Icons
 //    statusIcons[0].addFile(":/Images/MissedCall.png");
 //    statusIcons[1].addFile(":/Images/OffhookCall.png");
     windowIcons[0].addFile(":/Images/RedIco.ico");
     windowIcons[1].addFile(":/Images/GreenIco.ico");
-
 
 #ifdef USE_MP3
     player.setMedia(QUrl::fromLocalFile("Call.mp3"));
@@ -66,11 +72,15 @@ CMainWnd::CMainWnd(QWidget *parent) :
     RefreshTrayIconStatus();
 
     ui->linkLabel->URL = "http://gss.freeiz.com/index.php/en/products/bb-notifier";
+
+    ui->listNotifications->addItem(CNotificationItem("NOTIF","Name","ServiceName",QDateTime::currentDateTime(), "Some Long Text for notification wrapping test...").Serialize());
+    ui->listNotifications->addItem(CNotificationItem("NOTIF","Name2","ServiceName",QDateTime::currentDateTime(), "Some Long Text for notification wrapping test... 111 222 333 44 55 6  767 546 45 674567 4567 dg5 6df 53e6h drg h dt  ue th56u 5e6u 56u 356u").Serialize());
 }
 
 CMainWnd::~CMainWnd()
 {
     delete ui->listHistory->itemDelegate();
+    delete ui->listNotifications->itemDelegate();
     delete ui;
 }
 
@@ -136,11 +146,15 @@ void CMainWnd::closeEvent(QCloseEvent *event)
 
 void CMainWnd::resizeEvent(QResizeEvent* ev)
 {
-    ui->listHistory->resize(ev->size().width(),ev->size().height()-40);
+    QSize rect = ev->size();
+    ui->tabLists->resize(ev->size().width()+2,ev->size().height()-40);
+    ui->listHistory->resize(ev->size().width()-3,ev->size().height() - ui->tabLists->tabBar()->height()-43);
+    ui->listNotifications->resize(ev->size().width()-3,ev->size().height() - ui->tabLists->tabBar()->height()-43);
     ui->btnClearHistory->move(ev->size().width()-ui->btnClearHistory->size().width()-5,
                               ev->size().height()-ui->btnClearHistory->size().height()-5);
     ui->linkLabel->move(ui->linkLabel->pos().x(),
                         ev->size().height()-ui->linkLabel->size().height()-10);
+    ui->listNotifications->setSpacing(0);
 }
 
 void CMainWnd::ShowSettings()
@@ -160,8 +174,9 @@ void CMainWnd::OnSettingsChanged()
 
 void CMainWnd::OnNewCall(const CNotificationItem& data)
 {
-    if(data.Type==CNotificationItem::RINGING_CALL)
+    switch(data.Type)
     {
+    case CNotificationItem::RINGING_CALL:
         ShowMessage(data.Name+"\n"+data.Phone);
         AddNewCall(data);
         RefreshTrayIconStatus();
@@ -176,17 +191,28 @@ void CMainWnd::OnNewCall(const CNotificationItem& data)
             sound.play();
         }
 #endif
-    }
-    else if(data.Type==CNotificationItem::OFFHOOK_CALL)
-    {
+        break;
+    case CNotificationItem::OFFHOOK_CALL:
         MarkCallAccepted(data);
         RefreshTrayIconStatus();
+        break;
+    case CNotificationItem::NOTIFICATION:
+        ui->listNotifications->addItem(data.Serialize());
+        ui->listNotifications->scrollToBottom();
+        break;
     }
 }
 
 void CMainWnd::on_btnClearHistory_clicked()
 {
-    ui->listHistory->clear();
+    if(ui->tabLists->tabBar()->currentIndex()==0)
+    {
+        ui->listNotifications->clear();
+    }
+    else
+    {
+        ui->listHistory->clear();
+    }
     RefreshTrayIconStatus();
 }
 

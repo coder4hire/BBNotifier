@@ -18,18 +18,19 @@
 #include "NotificationItem.h"
 #include "qstringlist.h"
 
-const QString CNotificationItem::typeNames[]={"EMPTY","RINGING","OFFHOOK"};
+const QString CNotificationItem::typeNames[]={"EMPTY","RINGING","OFFHOOK","NOTIF"};
 
 CNotificationItem::CNotificationItem()
 {
     Type=EMPTY;
 }
 
-CNotificationItem::CNotificationItem(const QString& typeStr,const QString& phone,const QString& name,const QDateTime& dateTime)
+CNotificationItem::CNotificationItem(const QString& typeStr, const QString& phone, const QString& name, const QDateTime& dateTime, const QString &data)
 {
     Phone = phone;
     Name = name;
     DateTime = dateTime;
+    Data = data;
     SetType(typeStr);
 }
 
@@ -44,12 +45,13 @@ CNotificationItem::CNotificationItem(const QString& serializedString)
 
     Phone = len>1 ? dataItems[1] : "Unknown Phone";
     Name = len>2 ? dataItems[2] : "Unknown Contact";
-    DateTime = len>3 ? QDateTime::fromString(dataItems[3]) : QDateTime();
+    Data = len>3 ? dataItems[3] : "";
+    DateTime = len>4 ? QDateTime::fromString(dataItems[4]) : QDateTime();
 }
 
 QString CNotificationItem::Serialize() const
 {
-    return typeNames[Type]+"\n"+Phone+"\n"+Name+"\n"+DateTime.toString();
+    return typeNames[Type]+"\n"+Phone+"\n"+Name+"\n"+Data+"\n"+DateTime.toString();
 }
 
 void CNotificationItem::SetType(const QString& strType)
