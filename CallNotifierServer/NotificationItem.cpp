@@ -46,12 +46,20 @@ CNotificationItem::CNotificationItem(const QString& serializedString)
     Phone = len>1 ? dataItems[1] : "Unknown Phone";
     Name = len>2 ? dataItems[2] : "Unknown Contact";
     Data = len>3 ? dataItems[3] : "";
-    DateTime = len>4 ? QDateTime::fromString(dataItems[4]) : QDateTime();
+    QByteArray byteArray = QByteArray::fromBase64(dataItems[4].toUtf8());
+    const uchar* p = (const uchar*)byteArray.constData();
+    Image = len>4 && dataItems[4]!=""?
+        QImage(p,24,24,QImage::Format_RGBA8888).copy() :
+        QImage();
+    DateTime = len>5 ? QDateTime::fromString(dataItems[5]) : QDateTime();
 }
 
 QString CNotificationItem::Serialize() const
 {
-    return typeNames[Type]+"\n"+Phone+"\n"+Name+"\n"+Data+"\n"+DateTime.toString();
+    const char* bits = (const char*)Image.bits();
+    QString enc = (QString)QByteArray((const char*)bits,24*24*4).toBase64();
+    return typeNames[Type]+"\n"+Phone+"\n"+Name+"\n"+Data+"\n"+
+            (Image.isNull() ? "" : enc) +"\n"+DateTime.toString();
 }
 
 void CNotificationItem::SetType(const QString& strType)
@@ -66,4 +74,9 @@ void CNotificationItem::SetType(const QString& strType)
     }
 
     Type = EMPTY;
+}
+
+QString CNotificationItem::GetUnescapedData()
+{
+    return Data.replace("\\n","\n");
 }

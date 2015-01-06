@@ -44,7 +44,7 @@ void CServerSocket::OnReadyRead()
     {
         QTcpSocket::peek((char*)&payloadLength,4);
 
-        if(payloadLength>4096 || payloadLength<1)
+        if(payloadLength>131072 || payloadLength<1)
         {
             //-F- Too big or small packet - that can't be true
             close();

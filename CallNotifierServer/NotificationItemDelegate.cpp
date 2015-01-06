@@ -44,18 +44,17 @@ void CNotificationItemDelegate::paint(QPainter *painter, const QStyleOptionViewI
 
     //-F- Drawing Item
     painter->setFont(bigFont);
-    const QRect textRect = painter->boundingRect(option.rect.left()+5,option.rect.top(),option.rect.width()-10,100,Qt::TextWordWrap,data.Data);
-    painter->drawText(textRect,Qt::TextWordWrap,data.Data);
+    const QRect textRect = painter->boundingRect(option.rect.left()+30,option.rect.top(),option.rect.width()-35,100,Qt::TextWordWrap,data.GetUnescapedData());
+    painter->drawText(textRect,Qt::TextWordWrap,data.GetUnescapedData());
 
     painter->setFont(smallFont);
     painter->drawText(QRect(option.rect.left(),option.rect.top()+textRect.height(),option.rect.width()-8,smallHeight),Qt::AlignRight,data.Phone);
 
     //-F- Painting Icon
-    //    if(data.Type==CNotificationItem::RINGING_CALL || data.Type==CNotificationItem::OFFHOOK_CALL)
-    //    {
-    //        QImage& img = statusImages[(int)data.Type-(int)CNotificationItem::RINGING_CALL];
-    //        painter->drawImage(30,option.rect.top()+bigHeight+2*smallHeight-img.height(),img);
-    //    }
+    if(!data.Image.isNull())
+    {
+        painter->drawImage(3,option.rect.top()+5,data.Image);
+    }
 
     painter->restore();
 
@@ -74,9 +73,9 @@ QSize CNotificationItemDelegate::sizeHint(const QStyleOptionViewItem &option, co
     QScrollBar* bar=((QListWidget*)option.widget)->verticalScrollBar();
     int scrollWidth = bar->isVisible() ? bar->width() : 0;
 
-    int height = QFontMetrics(bigFont).boundingRect(5,0,
-                                                    rect.width()-10-scrollWidth,100,
-                                                    Qt::TextWordWrap,data.Data).height()+smallHeight+5;
+    int height = QFontMetrics(bigFont).boundingRect(30,0,
+                                                    rect.width()-35-scrollWidth,100,
+                                                    Qt::TextWordWrap,data.GetUnescapedData()).height()+smallHeight+5;
     //-F- Drawing Item
     return QSize(0,height);
 }

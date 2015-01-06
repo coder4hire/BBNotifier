@@ -1,7 +1,8 @@
 #ifndef NOTIFICATIONITEM_H
 #define NOTIFICATIONITEM_H
 
-#include "QDateTime"
+#include "qdatetime.h"
+#include "qimage.h"
 
 class CNotificationItem
 {
@@ -23,9 +24,11 @@ public:
     QString Name;
     QString Data;
     QDateTime DateTime;
+    QImage Image;
     EType Type;
 
     void SetType(const QString& strType);
+    QString GetUnescapedData();
 
     QString Serialize() const;
 
