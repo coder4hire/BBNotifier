@@ -43,17 +43,19 @@ void CNotificationItemDelegate::paint(QPainter *painter, const QStyleOptionViewI
 
 
     //-F- Drawing Item
+    painter->setFont(smallFont);
+    painter->drawText(option.rect.left()+32,option.rect.top()+smallHeight/2+15,data.Phone+ " ("+data.DateTime.toString("hh:mm:ss")+")");
     painter->setFont(bigFont);
-    const QRect textRect = painter->boundingRect(option.rect.left()+30,option.rect.top(),option.rect.width()-35,100,Qt::TextWordWrap,data.GetUnescapedData());
+    const QRect textRect = painter->boundingRect(option.rect.left()+3,option.rect.top()+28,option.rect.width()-7,100,Qt::TextWordWrap,data.GetUnescapedData());
     painter->drawText(textRect,Qt::TextWordWrap,data.GetUnescapedData());
 
-    painter->setFont(smallFont);
-    painter->drawText(QRect(option.rect.left(),option.rect.top()+textRect.height(),option.rect.width()-8,smallHeight),Qt::AlignRight,data.Phone);
+//    painter->setFont(smallFont);
+//    painter->drawText(QRect(option.rect.left(),option.rect.top()+textRect.height(),option.rect.width()-8,smallHeight),Qt::AlignRight,data.Phone);
 
     //-F- Painting Icon
     if(!data.Image.isNull())
     {
-        painter->drawImage(3,option.rect.top()+5,data.Image);
+        painter->drawImage(3,option.rect.top()+3,data.Image);
     }
 
     painter->restore();
@@ -73,9 +75,10 @@ QSize CNotificationItemDelegate::sizeHint(const QStyleOptionViewItem &option, co
     QScrollBar* bar=((QListWidget*)option.widget)->verticalScrollBar();
     int scrollWidth = bar->isVisible() ? bar->width() : 0;
 
-    int height = QFontMetrics(bigFont).boundingRect(30,0,
-                                                    rect.width()-35-scrollWidth,100,
-                                                    Qt::TextWordWrap,data.GetUnescapedData()).height()+smallHeight+5;
+
+    int height = QFontMetrics(bigFont).boundingRect(3,0,
+                                                    rect.width()-10-scrollWidth,100,
+                                                    Qt::TextWordWrap,data.GetUnescapedData()).height()+35;
     //-F- Drawing Item
     return QSize(0,height);
 }
