@@ -29,6 +29,9 @@ public:
     int GetPort(){return TCPPort;}
     AESKey GetAesKey(){return aesKey;}
     static CSettingsDialog* GetInstance(){return pInst? pInst : (pInst=new CSettingsDialog);}
+    bool IsCallPopupEnabled(){return shouldShowCallPopup;}
+    bool IsNotificationPopupEnabled(){return shouldShowNotificationPopup;}
+
     
 private slots:
     void on_btnGen_clicked();
@@ -42,6 +45,8 @@ private:
     Ui::CSettingsDialog *ui;
     static CSettingsDialog *pInst;
     QSettings settingsStorage;
+    bool shouldShowCallPopup;
+    bool shouldShowNotificationPopup;
 
     int TCPPort;
     AESKey aesKey;

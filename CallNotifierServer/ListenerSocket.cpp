@@ -53,6 +53,7 @@ CMainWnd* CListenerSocket::GetMainWnd()
 void CListenerSocket::OnIncomingMessage(QString msg)
 {
     CNotificationItem data(msg);
+    data.NormalizeIcon();
     if(data.Type!=CNotificationItem::EMPTY)
     {
         data.DateTime=QDateTime::currentDateTime();

@@ -64,7 +64,7 @@ QString CNotificationItem::Serialize() const
 
 void CNotificationItem::SetType(const QString& strType)
 {
-    for(int i=0;i<_countof(typeNames);i++)
+    for(int i=0;i<(int)_countof(typeNames);i++)
     {
         if(strType==typeNames[i])
         {
@@ -76,7 +76,65 @@ void CNotificationItem::SetType(const QString& strType)
     Type = EMPTY;
 }
 
-QString CNotificationItem::GetUnescapedData()
+QString CNotificationItem::GetUnescapedData() const
 {
-    return Data.replace("\\n","\n");
+    return QString(Data).replace("\\n","\n");
+}
+
+
+void CNotificationItem::NormalizeIcon()
+{
+    int minLight=255;
+    int maxLight=0;
+    double colorDiff=0;
+
+    if(Image.isNull())
+    {
+        return;
+    }
+
+    QRgb pixels[24][24];
+
+    //-F- Checking parameters of icon
+    for (int x = 0; x < 24; x++)
+    {
+        for (int y = 0; y < 24; y++)
+        {
+            QRgb pixel = Image.pixel(x,y);
+            colorDiff += abs(qRed(pixel)-qGreen(pixel))+abs(qRed(pixel)-qBlue(pixel));
+            int alpha = qAlpha(pixel);
+            pixel=qRgba(qRed(pixel)*alpha/255+(255-alpha),qGreen(pixel)*alpha/255+(255-alpha),qBlue(pixel)*alpha/255+(255-alpha),alpha);
+            pixels[x][y]=pixel;
+
+            if(minLight>qGreen(pixel) && qAlpha(pixel)>128)
+            {
+                minLight=qGreen(pixel);
+            }
+            if(maxLight<qGreen(pixel) && qAlpha(pixel)>128)
+            {
+                maxLight=qGreen(pixel);
+            }
+        }
+    }
+
+    int meanDiff = (maxLight + minLight)/2;
+    double scale = 200./(maxLight - minLight);
+
+    //-F- If icon is grayscale image, make it more contrast
+    if(minLight<maxLight && colorDiff < 24 * 24 * 2 * 8 && scale>1)
+    {
+        for (int x = 0; x < 24; x++)
+        {
+            for (int y = 0; y < 24; y++)
+            {
+                QRgb pixel = pixels[x][y];
+                double alphaCorrection = qAlpha(pixel)>16 ? 255.0/qAlpha(pixel) : 1;
+                Image.setPixel(x,y,
+                               qRgba(((qRed(pixel)-meanDiff)*scale+150)*alphaCorrection,
+                               ((qGreen(pixel)-meanDiff)*scale+150)*alphaCorrection,
+                               ((qBlue(pixel)-meanDiff)*scale+150)*alphaCorrection,
+                               qAlpha(pixel)));
+            }
+        }
+    }
 }

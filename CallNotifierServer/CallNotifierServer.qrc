@@ -8,5 +8,6 @@
         <file>Sounds/Call.wav</file>
         <file>Images/GreenIco.ico</file>
         <file>Images/RedIco.ico</file>
+        <file>Sounds/Notif.wav</file>
     </qresource>
 </RCC>

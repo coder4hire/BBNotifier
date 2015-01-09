@@ -24,7 +24,7 @@ class CMainWnd : public QDialog
     
 public:
     explicit CMainWnd(QWidget *parent = 0);
-    void ShowMessage(QString msg);
+    void ShowMessage(const QString& name,const QString& msg);
     void OnNewCall(const CNotificationItem& data);
 
     ~CMainWnd();
@@ -46,7 +46,7 @@ protected:
 #else
     QSound sound;
 #endif
-
+    QSound soundNotif;
 
 private slots:
     void IconActivated(QSystemTrayIcon::ActivationReason reason);
@@ -67,6 +67,8 @@ private:
     QAction* quitAction;
 
     CListenerSocket listener;
+
+    virtual void showEvent(QShowEvent* ev);
 };
 
 #endif // MAINWND_H

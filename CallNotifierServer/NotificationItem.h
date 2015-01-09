@@ -28,7 +28,8 @@ public:
     EType Type;
 
     void SetType(const QString& strType);
-    QString GetUnescapedData();
+    QString GetUnescapedData() const ;
+    void NormalizeIcon();
 
     QString Serialize() const;
 

@@ -35,6 +35,7 @@ CMainWnd::CMainWnd(QWidget *parent) :
     ui(new Ui::CMainWnd)
 #ifndef USE_MP3
     ,sound(":/Sounds/Call.wav")
+    ,soundNotif(":/Sounds/Notif.wav")
 #endif
 {
     setWindowFlags(windowFlags()&~Qt::WindowContextHelpButtonHint);
@@ -99,10 +100,9 @@ void CMainWnd::IconActivated(QSystemTrayIcon::ActivationReason reason)
     }
 }
 
-void CMainWnd::ShowMessage(QString msg)
+void CMainWnd::ShowMessage(const QString& name,const QString& msg)
 {
-    QSystemTrayIcon::MessageIcon icon = QSystemTrayIcon::Information;
-    trayIcon->showMessage("BB Notifier", msg, icon,3000);
+    trayIcon->showMessage(name, msg, QSystemTrayIcon::Information, 3000);
 }
 
 void CMainWnd::MessageClicked()
@@ -140,6 +140,8 @@ void CMainWnd::PrepareTrayIcon()
 
 void CMainWnd::closeEvent(QCloseEvent *event)
 {
+    QSettings settingsStorage("GSS","BBNotifier");
+    settingsStorage.setValue("mainWindow",this->saveGeometry());
     hide();
     event->ignore();
 }
@@ -177,7 +179,10 @@ void CMainWnd::OnNewCall(const CNotificationItem& data)
     switch(data.Type)
     {
     case CNotificationItem::RINGING_CALL:
-        ShowMessage(data.Name+"\n"+data.Phone);
+        if(CSettingsDialog::GetInstance()->IsCallPopupEnabled())
+        {
+            ShowMessage("Phone call",data.Name+"\n"+data.Phone);
+        }
         AddNewCall(data);
         RefreshTrayIconStatus();
 
@@ -192,11 +197,21 @@ void CMainWnd::OnNewCall(const CNotificationItem& data)
         }
 #endif
         break;
+
     case CNotificationItem::OFFHOOK_CALL:
         MarkCallAccepted(data);
         RefreshTrayIconStatus();
         break;
-    case CNotificationItem::NOTIFICATION:
+
+    case CNotificationItem::NOTIFICATION:       
+        if(soundNotif.isFinished())
+        {
+            soundNotif.play();
+        }
+        if(CSettingsDialog::GetInstance()->IsNotificationPopupEnabled())
+        {
+            ShowMessage(data.Phone,data.GetUnescapedData());
+        }
         ui->listNotifications->addItem(data.Serialize());
         ui->listNotifications->scrollToBottom();
         break;
@@ -254,6 +269,13 @@ void CMainWnd::ShowAndActivate()
     this->showNormal();
     this->activateWindow();
 }
+
+void CMainWnd::showEvent(QShowEvent* ev)
+{
+    QSettings settingsStorage("GSS","BBNotifier");
+    restoreGeometry(settingsStorage.value("mainWindow",QByteArray()).toByteArray());
+}
+
 
 void CMainWnd::RefreshTrayIconStatus()
 {
