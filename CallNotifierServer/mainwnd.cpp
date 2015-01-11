@@ -74,8 +74,12 @@ CMainWnd::CMainWnd(QWidget *parent) :
 
     ui->linkLabel->URL = "http://gss.freeiz.com/index.php/en/products/bb-notifier";
 
+    trayTimer.setSingleShot(true);
+    connect(&trayTimer,SIGNAL(timeout()),this,SLOT(OnTimer()));
+
 //    ui->listNotifications->addItem(CNotificationItem("NOTIF","Name","ServiceName",QDateTime::currentDateTime(), "Some Long Text for notification wrapping test...").Serialize());
 //    ui->listNotifications->addItem(CNotificationItem("NOTIF","Name2","ServiceName",QDateTime::currentDateTime(), "Some Long Text for notification wrapping test... 111 222 333 44 55 6  767 546 45 674567 4567 dg5 6df 53e6h drg h dt  ue th56u 5e6u 56u 356u").Serialize());
+
 }
 
 CMainWnd::~CMainWnd()
@@ -103,6 +107,7 @@ void CMainWnd::IconActivated(QSystemTrayIcon::ActivationReason reason)
 void CMainWnd::ShowMessage(const QString& name,const QString& msg)
 {
     trayIcon->showMessage(name, msg, QSystemTrayIcon::Information, 3000);
+    trayTimer.start(7000);
 }
 
 void CMainWnd::MessageClicked()
@@ -293,4 +298,10 @@ void CMainWnd::RefreshTrayIconStatus()
 
     setWindowIcon(windowIcons[isGreen ? 1:0]);
     trayIcon->setIcon(windowIcons[isGreen ? 1:0]);
+}
+
+void CMainWnd::OnTimer()
+{
+    trayIcon->hide();
+    trayIcon->show();
 }

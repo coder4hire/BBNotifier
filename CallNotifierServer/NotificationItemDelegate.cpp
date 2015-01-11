@@ -55,7 +55,7 @@ void CNotificationItemDelegate::paint(QPainter *painter, const QStyleOptionViewI
     //-F- Painting Icon
     if(!data.Image.isNull())
     {
-        painter->drawImage(3,option.rect.top()+3,data.Image);
+        painter->drawImage(3,option.rect.top()+4,data.Image);
     }
 
     painter->restore();

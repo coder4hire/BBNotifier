@@ -7,6 +7,7 @@
 #include "ListenerSocket.h"
 #include "NotificationItem.h"
 #include "qsound.h"
+#include "qtimer.h"
 
 //#define USE_MP3
 
@@ -56,6 +57,7 @@ private slots:
     void ShowAndActivate();
 
     void on_btnClearHistory_clicked();
+    void OnTimer();
 
 private:
     Ui::CMainWnd *ui;
@@ -65,6 +67,8 @@ private:
     QAction* settingsAction;
     QAction* showAction;
     QAction* quitAction;
+
+    QTimer trayTimer;
 
     CListenerSocket listener;
 
