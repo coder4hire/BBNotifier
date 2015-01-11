@@ -26,8 +26,7 @@
 #include "NotificationItemDelegate.h"
 #include "qlayout.h"
 
-//QIcon CMainWnd::statusIcons[2];
-QIcon CMainWnd::windowIcons[2];
+QIcon CMainWnd::windowIcons[4];
 
 CMainWnd::CMainWnd(QWidget *parent) :
     QDialog(parent),
@@ -43,6 +42,8 @@ CMainWnd::CMainWnd(QWidget *parent) :
     ui->setupUi(this);
 
     PrepareTrayIcon();
+
+    hasNewNotificationCame=false;
 
     //-F- Starting TCP server
     listener.RestartListening();
@@ -61,10 +62,11 @@ CMainWnd::CMainWnd(QWidget *parent) :
     delete delegate;
 
     //-F- Loading Icons
-//    statusIcons[0].addFile(":/Images/MissedCall.png");
-//    statusIcons[1].addFile(":/Images/OffhookCall.png");
     windowIcons[0].addFile(":/Images/RedIco.ico");
     windowIcons[1].addFile(":/Images/GreenIco.ico");
+    windowIcons[2].addFile(":/Images/NotifRed.ico");
+    windowIcons[3].addFile(":/Images/NotifGreen.ico");
+
 
 #ifdef USE_MP3
     player.setMedia(QUrl::fromLocalFile("Call.mp3"));
@@ -189,7 +191,6 @@ void CMainWnd::OnNewCall(const CNotificationItem& data)
             ShowMessage("Phone call",data.Name+"\n"+data.Phone);
         }
         AddNewCall(data);
-        RefreshTrayIconStatus();
 
         //-F- Play sound
 #ifdef USE_MP3
@@ -205,10 +206,10 @@ void CMainWnd::OnNewCall(const CNotificationItem& data)
 
     case CNotificationItem::OFFHOOK_CALL:
         MarkCallAccepted(data);
-        RefreshTrayIconStatus();
         break;
 
-    case CNotificationItem::NOTIFICATION:       
+    case CNotificationItem::NOTIFICATION:
+        hasNewNotificationCame=true;
         if(soundNotif.isFinished())
         {
             soundNotif.play();
@@ -218,9 +219,15 @@ void CMainWnd::OnNewCall(const CNotificationItem& data)
             ShowMessage(data.Phone,data.GetUnescapedData());
         }
         ui->listNotifications->addItem(data.Serialize());
+        while(ui->listNotifications->count()>1 && ui->listNotifications->count() > CSettingsDialog::GetInstance()->GetMaxItemsCount())
+        {
+            delete ui->listNotifications->item(0);
+        }
         ui->listNotifications->scrollToBottom();
         break;
     }
+
+    RefreshTrayIconStatus();
 }
 
 void CMainWnd::on_btnClearHistory_clicked()
@@ -252,6 +259,12 @@ void CMainWnd::AddNewCall(const CNotificationItem& data)
 
     //-F- Inserting new item
     ui->listHistory->addItem(data.Serialize());
+
+    while(ui->listHistory->count()>1 &&ui->listHistory->count()>CSettingsDialog::GetInstance()->GetMaxItemsCount())
+    {
+        delete ui->listHistory->item(0);
+    }
+
     ui->listHistory->scrollToBottom();
 }
 
@@ -296,12 +309,22 @@ void CMainWnd::RefreshTrayIconStatus()
         }
     }
 
-    setWindowIcon(windowIcons[isGreen ? 1:0]);
-    trayIcon->setIcon(windowIcons[isGreen ? 1:0]);
+    int iconNum  = (hasNewNotificationCame ? 2:0)+(isGreen ? 1:0);
+    setWindowIcon(windowIcons[iconNum]);
+    trayIcon->setIcon(windowIcons[iconNum]);
 }
 
 void CMainWnd::OnTimer()
 {
     trayIcon->hide();
     trayIcon->show();
+}
+
+void CMainWnd::changeEvent (QEvent *event)
+{
+    if(isActiveWindow())
+    {
+        hasNewNotificationCame=false;
+        RefreshTrayIconStatus();
+    }
 }

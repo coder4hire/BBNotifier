@@ -34,13 +34,13 @@ protected:
     void PrepareTrayIcon();
     virtual void closeEvent(QCloseEvent *event);
     virtual void resizeEvent(QResizeEvent* ev);
+    virtual void changeEvent (QEvent *event);
 
     void AddNewCall(const CNotificationItem& data);
     void MarkCallAccepted(const CNotificationItem& data);    
     void RefreshTrayIconStatus();
 
-//    static QIcon statusIcons[2];
-    static QIcon windowIcons[2];
+    static QIcon windowIcons[4];
 
 #ifdef USE_MP3
     QMediaPlayer player;
@@ -69,6 +69,7 @@ private:
     QAction* quitAction;
 
     QTimer trayTimer;
+    bool hasNewNotificationCame;
 
     CListenerSocket listener;
 

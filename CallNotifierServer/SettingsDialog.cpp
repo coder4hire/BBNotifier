@@ -42,6 +42,7 @@ CSettingsDialog::CSettingsDialog(QWidget *parent) :
 
     shouldShowCallPopup=settingsStorage.value("showCallPopup",true).toBool();
     shouldShowNotificationPopup=settingsStorage.value("showNotifPopup",true).toBool();
+    maxItemsCount=settingsStorage.value("maxItemsCount",20).toInt();
 
     TCPPort = settingsStorage.value("port",8083).toInt();
     QStringList baKey=settingsStorage.value("key").toStringList();
@@ -69,8 +70,10 @@ void CSettingsDialog::showEvent(QShowEvent *ev)
     QStringList list = settings.allKeys();
     bool isRunningAtStartup = settings.value("BBNotifier").isValid();
     ui->chkStartup->setChecked(isRunningAtStartup);
+
     ui->chkShowCallPopups->setChecked(shouldShowCallPopup);
     ui->chkShowNotificationPopup->setChecked(shouldShowNotificationPopup);
+    ui->edtListLength->setValue(maxItemsCount);
 
     //-F_ Start broadcasting
     timer.start(5000);
@@ -102,11 +105,13 @@ void CSettingsDialog::on_buttonBox_accepted()
     TCPPort=ui->edtPort->value();
     shouldShowCallPopup = ui->chkShowCallPopups->isChecked();
     shouldShowNotificationPopup = ui->chkShowNotificationPopup->isChecked();
+    maxItemsCount = ui->edtListLength->value();
 
     settingsStorage.setValue("port",TCPPort);
     settingsStorage.setValue("key",aesKey.ToQVList());
     settingsStorage.setValue("showCallPopup",shouldShowCallPopup);
     settingsStorage.setValue("showNotifPopup",shouldShowNotificationPopup);
+    settingsStorage.setValue("maxItemsCount",maxItemsCount);
 
     //-F- Put this program to startup section of registry
     QSettings settings("HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", QSettings::NativeFormat);

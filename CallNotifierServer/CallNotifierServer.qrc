@@ -9,5 +9,7 @@
         <file>Images/GreenIco.ico</file>
         <file>Images/RedIco.ico</file>
         <file>Sounds/Notif.wav</file>
+        <file>Images/NotifGreen.ico</file>
+        <file>Images/NotifRed.ico</file>
     </qresource>
 </RCC>

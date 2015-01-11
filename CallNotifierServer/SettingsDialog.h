@@ -31,6 +31,7 @@ public:
     static CSettingsDialog* GetInstance(){return pInst? pInst : (pInst=new CSettingsDialog);}
     bool IsCallPopupEnabled(){return shouldShowCallPopup;}
     bool IsNotificationPopupEnabled(){return shouldShowNotificationPopup;}
+    int GetMaxItemsCount(){return maxItemsCount;}
 
     
 private slots:
@@ -47,6 +48,7 @@ private:
     QSettings settingsStorage;
     bool shouldShowCallPopup;
     bool shouldShowNotificationPopup;
+    int maxItemsCount;
 
     int TCPPort;
     AESKey aesKey;
