@@ -302,8 +302,7 @@ font: italic 10pt;
        <cursorShape>PointingHandCursor</cursorShape>
       </property>
       <property name="toolTip">
-       <string>Donate to future project development...
-We have a lot of great ideas and features to implement !!!</string>
+       <string>Android Application at Google Play Store</string>
       </property>
       <property name="styleSheet">
        <string notr="true">QLabel
